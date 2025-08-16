@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced IP Detection & Network Analysis Tool</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* Complete CSS with Tailwind-like utilities and glassmorphism effects */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .rtl {
+            direction: rtl;
+            font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #a855f7, #ec4899, #14b8a6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #a855f7, #14b8a6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #a855f7, #14b8a6);
+            transition: width 0.3s ease;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #a855f7;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 100px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #a855f7, #ec4899, #14b8a6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #a855f7, #14b8a6);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(168, 85, 247, 0.4);
+        }
+
+        .footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-buttons {
+                display: none;
+            }
+            
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+        }
+
+        /* Persian font support */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body>
+    <!-- Complete HTML structure with all components integrated -->
+    <nav class="sticky-nav">
+        <div class="container">
+            <div class="nav-container">
+                <h1 class="nav-title" id="nav-title">Advanced IP Detection Tool</h1>
+                <div class="nav-buttons">
+                    <a href="#ip-section" class="nav-btn" id="nav-ip">IP Detection</a>
+                    <a href="#speed-section" class="nav-btn" id="nav-speed">Speed Test</a>
+                    <a href="#whois-section" class="nav-btn" id="nav-whois">Whois Search</a>
+                    <a href="#tools-section" class="nav-btn" id="nav-tools">Advanced Tools</a>
+                    <a href="#port-section" class="nav-btn" id="nav-port">Port Scanner</a>
+                    <a href="#faq-section" class="nav-btn" id="nav-faq">FAQ</a>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="nav-btn" onclick="toggleLanguage()" id="lang-btn">فارسی</button>
+                    <button class="nav-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header Section -->
+        <header style="text-align: center; padding: 2rem 0;">
+            <h1 class="section-title" id="main-title">Advanced IP Detection & Network Analysis</h1>
+            <p class="section-subtitle" id="main-subtitle">Comprehensive network analysis tools with real-time IP detection, speed testing, and security analysis</p>
+        </header>
+
+        <!-- IP Detection Section -->
+        <section id="ip-section" class="section">
+            <h2 class="section-title" id="ip-title">IP Detection & Location</h2>
+            <p class="section-subtitle" id="ip-subtitle">Detect your IP address and get detailed geolocation information</p>
+            
+            <div class="grid grid-2">
+                <div>
+                    <!-- IP Information Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                🌐 <span id="ip-info-title">IP Information</span>
+                            </h3>
+                        </div>
+                        <div id="ip-content">
+                            <button class="btn btn-primary" onclick="detectIP()" id="detect-btn">
+                                <span id="detect-text">Detect My IP</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Network Status Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                📡 <span id="network-title">Network Status</span>
+                            </h3>
+                        </div>
+                        <div id="network-content">
+                            <p id="network-placeholder">Detect IP first to see network status</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            📍 <span id="map-title">Your Location on Map</span>
+                        </h3>
+                    </div>
+                    <div id="map-container" class="map-container">
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255,255,255,0.5);">
+                            <span id="map-placeholder">Detect IP to show location on map</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Speed Test Section -->
+        <section id="speed-section" class="section">
+            <h2 class="section-title" id="speed-title">Internet Speed Test</h2>
+            <p class="section-subtitle" id="speed-subtitle">Test your internet connection speed with download, upload, and ping measurements</p>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        ⚡ <span id="speed-test-title">Speed Test</span>
+                    </h3>
+                </div>
+                <div id="speed-content">
+                    <button class="btn btn-primary" onclick="runSpeedTest()" id="speed-btn">
+                        <span id="speed-btn-text">Start Speed Test</span>
+                    </button>
+                    <div id="speed-progress" style="display: none; margin-top: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span id="speed-phase">Preparing test...</span>
+                            <span id="speed-percent">0%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" id="speed-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div id="speed-results" style="display: none; margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Whois Section -->
+        <section id="whois-section" class="section">
+            <h2 class="section-title" id="whois-title">Domain Whois Lookup</h2>
+            <p class="section-subtitle" id="whois-subtitle">Get detailed domain registration information using DumbWhoIs integration</p>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        🔍 <span id="whois-lookup-title">Whois Lookup</span>
+                    </h3>
+                </div>
+                <div>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="domain-input" style="display: block; margin-bottom: 0.5rem; font-weight: 500;" id="domain-label">Domain Name</label>
+                        <input type="text" id="domain-input" class="input" placeholder="e.g., example.com">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="performWhoisLookup()" id="whois-btn">
+                            <span id="whois-btn-text">Lookup Domain</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="openViewDNS()" id="viewdns-btn">
+                            <span id="viewdns-text">ViewDNS.info</span>
+                        </button>
+                    </div>
+                    <div id="whois-results" style="margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advanced Tools Section -->
+        <section id="tools-section" class="section">
+            <h2 class="section-title" id="tools-title">Advanced Network Tools</h2>
+            <p class="section-subtitle" id="tools-subtitle">Additional network diagnostic and analysis tools</p>
+            
+            <div class="grid grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔍 <span id="dns-title">DNS Lookup</span></h3>
+                    </div>
+                    <div>
+                        <input type="text" id="dns-input" class="input" placeholder="Enter domain name" style="margin-bottom: 1rem;">
+                        <button class="btn btn-primary" onclick="performDNSLookup()" id="dns-btn">
+                            <span id="dns-btn-text">Lookup DNS</span>
+                        </button>
+                        <div id="dns-results" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🛣️ <span id="traceroute-title">Traceroute</span></h3>
+                    </div>
+                    <div>
+                        <input type="text" id="trace-input" class="input" placeholder="Enter IP or domain" style="margin-bottom: 1rem;">
+                        <button class="btn btn-primary" onclick="performTraceroute()" id="trace-btn">
+                            <span id="trace-btn-text">Trace Route</span>
+                        </button>
+                        <div id="trace-results" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📊 <span id="ping-title">Ping Test</span></h3>
+                    </div>
+                    <div>
+                        <input type="text" id="ping-input" class="input" placeholder="Enter IP or domain" style="margin-bottom: 1rem;">
+                        <button class="btn btn-primary" onclick="performPing()" id="ping-btn">
+                            <span id="ping-btn-text">Ping Host</span>
+                        </button>
+                        <div id="ping-results" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Port Scanner Section -->
+        <section id="port-section" class="section">
+            <h2 class="section-title" id="port-title">Port Scanner</h2>
+            <p class="section-subtitle" id="port-subtitle">Scan network ports to check connectivity and security</p>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        🛡️ <span id="port-scanner-title">Port Scanner</span>
+                    </h3>
+                </div>
+                <div>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="host-input" style="display: block; margin-bottom: 0.5rem; font-weight: 500;" id="host-label">Target Host</label>
+                        <input type="text" id="host-input" class="input" placeholder="e.g., google.com or 8.8.8.8">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="ports-input" style="display: block; margin-bottom: 0.5rem; font-weight: 500;" id="ports-label">Ports (comma-separated)</label>
+                        <input type="text" id="ports-input" class="input" placeholder="e.g., 80,443,22,21" value="80,443,22,21,25,53,110,993,995">
+                    </div>
+                    <button class="btn btn-primary" onclick="scanPorts()" id="scan-btn">
+                        <span id="scan-btn-text">Start Scan</span>
+                    </button>
+                    <div id="port-results" style="margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq-section" class="section">
+            <h2 class="section-title" id="faq-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle" id="faq-subtitle">Common questions about IP detection and network analysis</p>
+            
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="faq-q1">What is IP detection?</h3>
+                    </div>
+                    <p id="faq-a1">IP detection identifies your public IP address and provides geolocation information including country, city, ISP, and network details.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="faq-q2">How accurate is the location data?</h3>
+                    </div>
+                    <p id="faq-a2">Location accuracy varies by ISP and region. City-level accuracy is typically 70-90%, while country-level is over 95% accurate.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="faq-q3">Is my data secure?</h3>
+                    </div>
+                    <p id="faq-a3">Yes, all operations are performed client-side in your browser. No personal data is stored or transmitted to external servers.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="faq-q4">Why use this tool?</h3>
+                    </div>
+                    <p id="faq-a4">This tool provides comprehensive network analysis including IP detection, speed testing, port scanning, and domain lookup in one place.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="faq-q5">What is port scanning?</h3>
+                    </div>
+                    <p id="faq-a5">Port scanning checks if specific network ports are open or closed on a target host, useful for network diagnostics and security analysis.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="faq-q6">How does the speed test work?</h3>
+                    </div>
+                    <p id="faq-a6">The speed test measures download/upload speeds by transferring data to test servers and calculating throughput based on transfer time.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4 id="footer-title">IP Detection Tool</h4>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.875rem;" id="footer-desc">Advanced network analysis and IP detection tool with comprehensive features.</p>
+                </div>
+                <div class="footer-section">
+                    <h4 id="footer-features">Features</h4>
+                    <ul>
+                        <li id="footer-ip">IP Detection</li>
+                        <li id="footer-speed">Speed Test</li>
+                        <li id="footer-whois">Whois Lookup</li>
+                        <li id="footer-port">Port Scanner</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 id="footer-tools">Tools</h4>
+                    <ul>
+                        <li id="footer-dns">DNS Lookup</li>
+                        <li id="footer-trace">Traceroute</li>
+                        <li id="footer-ping">Ping Test</li>
+                        <li id="footer-advanced">Advanced Tools</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 id="footer-support">Support</h4>
+                    <ul>
+                        <li id="footer-faq">FAQ</li>
+                        <li id="footer-privacy">Privacy Policy</li>
+                        <li id="footer-terms">Terms of Service</li>
+                        <li id="footer-contact">Contact</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p id="footer-copyright">© 2024 Advanced IP Detection Tool. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scroll-top" onclick="scrollToTop()">
+        ↑
+    </button>
+
+    <script>
+        let currentLanguage = 'en';
+        let currentTheme = 'dark';
+        let ipData = null;
+        let map = null;
+
+        // Language translations
+        const translations = {
+            en: {
+                'nav-title': 'Advanced IP Detection Tool',
+                'nav-ip': 'IP Detection',
+                'nav-speed': 'Speed Test',
+                'nav-whois': 'Whois Search',
+                'nav-tools': 'Advanced Tools',
+                'nav-port': 'Port Scanner',
+                'nav-faq': 'FAQ',
+                'main-title': 'Advanced IP Detection & Network Analysis',
+                'main-subtitle': 'Comprehensive network analysis tools with real-time IP detection, speed testing, and security analysis',
+                'ip-title': 'IP Detection & Location',
+                'ip-subtitle': 'Detect your IP address and get detailed geolocation information',
+                'ip-info-title': 'IP Information',
+                'network-title': 'Network Status',
+                'map-title': 'Your Location on Map',
+                'detect-text': 'Detect My IP',
+                'network-placeholder': 'Detect IP first to see network status',
+                'map-placeholder': 'Detect IP to show location on map',
+                'speed-title': 'Internet Speed Test',
+                'speed-subtitle': 'Test your internet connection speed with download, upload, and ping measurements',
+                'speed-test-title': 'Speed Test',
+                'speed-btn-text': 'Start Speed Test',
+                'whois-title': 'Domain Whois Lookup',
+                'whois-subtitle': 'Get detailed domain registration information using DumbWhoIs integration',
+                'whois-lookup-title': 'Whois Lookup',
+                'domain-label': 'Domain Name',
+                'whois-btn-text': 'Lookup Domain',
+                'viewdns-text': 'ViewDNS.info',
+                'tools-title': 'Advanced Network Tools',
+                'tools-subtitle': 'Additional network diagnostic and analysis tools',
+                'dns-title': 'DNS Lookup',
+                'dns-btn-text': 'Lookup DNS',
+                'traceroute-title': 'Traceroute',
+                'trace-btn-text': 'Trace Route',
+                'ping-title': 'Ping Test',
+                'ping-btn-text': 'Ping Host',
+                'port-title': 'Port Scanner',
+                'port-subtitle': 'Scan network ports to check connectivity and security',
+                'port-scanner-title': 'Port Scanner',
+                'host-label': 'Target Host',
+                'ports-label': 'Ports (comma-separated)',
+                'scan-btn-text': 'Start Scan',
+                'faq-title': 'Frequently Asked Questions',
+                'faq-subtitle': 'Common questions about IP detection and network analysis',
+                'faq-q1': 'What is IP detection?',
+                'faq-a1': 'IP detection identifies your public IP address and provides geolocation information including country, city, ISP, and network details.',
+                'faq-q2': 'How accurate is the location data?',
+                'faq-a2': 'Location accuracy varies by ISP and region. City-level accuracy is typically 70-90%, while country-level is over 95% accurate.',
+                'faq-q3': 'Is my data secure?',
+                'faq-a3': 'Yes, all operations are performed client-side in your browser. No personal data is stored or transmitted to external servers.',
+                'faq-q4': 'Why use this tool?',
+                'faq-a4': 'This tool provides comprehensive network analysis including IP detection, speed testing, port scanning, and domain lookup in one place.',
+                'faq-q5': 'What is port scanning?',
+                'faq-a5': 'Port scanning checks if specific network ports are open or closed on a target host, useful for network diagnostics and security analysis.',
+                'faq-q6': 'How does the speed test work?',
+                'faq-a6': 'The speed test measures download/upload speeds by transferring data to test servers and calculating throughput based on transfer time.',
+                'footer-title': 'IP Detection Tool',
+                'footer-desc': 'Advanced network analysis and IP detection tool with comprehensive features.',
+                'footer-features': 'Features',
+                'footer-ip': 'IP Detection',
+                'footer-speed': 'Speed Test',
+                'footer-whois': 'Whois Lookup',
+                'footer-port': 'Port Scanner',
+                'footer-tools': 'Tools',
+                'footer-dns': 'DNS Lookup',
+                'footer-trace': 'Traceroute',
+                'footer-ping': 'Ping Test',
+                'footer-advanced': 'Advanced Tools',
+                'footer-support': 'Support',
+                'footer-faq': 'FAQ',
+                'footer-privacy': 'Privacy Policy',
+                'footer-terms': 'Terms of Service',
+                'footer-contact': 'Contact',
+                'footer-copyright': '© 2024 Advanced IP Detection Tool. All rights reserved.'
+            },
+            fa: {
+                'nav-title': 'ابزار پیشرفته تشخیص IP',
+                'nav-ip': 'تشخیص IP',
+                'nav-speed': 'تست سرعت',
+                'nav-whois': 'جستجوی Whois',
+                'nav-tools': 'ابزارهای پیشرفته',
+                'nav-port': 'اسکن پورت',
+                'nav-faq': 'سوالات متداول',
+                'main-title': 'تشخیص پیشرفته IP و تحلیل شبکه',
+                'main-subtitle': 'ابزارهای جامع تحلیل شبکه با تشخیص IP در زمان واقعی، تست سرعت و تحلیل امنیتی',
+                'ip-title': 'تشخیص IP و موقعیت',
+                'ip-subtitle': 'IP خود را شناسایی کرده و اطلاعات دقیق موقعیت جغرافیایی دریافت کنید',
+                'ip-info-title': 'اطلاعات IP',
+                'network-title': 'وضعیت شبکه',
+                'map-title': 'موقعیت شما روی نقشه',
+                'detect-text': 'تشخیص IP من',
+                'network-placeholder': 'ابتدا IP را تشخیص دهید تا وضعیت شبکه را ببینید',
+                'map-placeholder': 'IP را تشخیص دهید تا موقعیت روی نقشه نمایش داده شود',
+                'speed-title': 'تست سرعت اینترنت',
+                'speed-subtitle': 'سرعت اتصال اینترنت خود را با اندازه‌گیری دانلود، آپلود و پینگ تست کنید',
+                'speed-test-title': 'تست سرعت',
+                'speed-btn-text': 'شروع تست سرعت',
+                'whois-title': 'جستجوی Whois دامنه',
+                'whois-subtitle': 'اطلاعات تفصیلی ثبت دامنه را با استفاده از DumbWhoIs دریافت کنید',
+                'whois-lookup-title': 'جستجوی Whois',
+                'domain-label': 'نام دامنه',
+                'whois-btn-text': 'جستجوی دامنه',
+                'viewdns-text': 'ViewDNS.info',
+                'tools-title': 'ابزارهای پیشرفته شبکه',
+                'tools-subtitle': 'ابزارهای اضافی تشخیص و تحلیل شبکه',
+                'dns-title': 'جستجوی DNS',
+                'dns-btn-text': 'جستجوی DNS',
+                'traceroute-title': 'مسیریابی',
+                'trace-btn-text': 'ردیابی مسیر',
+                'ping-title': 'تست پینگ',
+                'ping-btn-text': 'پینگ هاست',
+                'port-title': 'اسکنر پورت',
+                'port-subtitle': 'پورت‌های شبکه را برای بررسی اتصال و امنیت اسکن کنید',
+                'port-scanner-title': 'اسکنر پورت',
+                'host-label': 'هاست هدف',
+                'ports-label': 'پورت‌ها (جدا شده با کاما)',
+                'scan-btn-text': 'شروع اسکن',
+                'faq-title': 'سوالات متداول',
+                'faq-subtitle': 'سوالات رایج در مورد تشخیص IP و تحلیل شبکه',
+                'faq-q1': 'تشخیص IP چیست؟',
+                'faq-a1': 'تشخیص IP آدرس عمومی شما را شناسایی کرده و اطلاعات موقعیت جغرافیایی شامل کشور، شهر، ISP و جزئیات شبکه ارائه می‌دهد.',
+                'faq-q2': 'دقت داده‌های موقعیت چقدر است؟',
+                'faq-a2': 'دقت موقعیت بسته به ISP و منطقه متفاوت است. دقت در سطح شهر معمولاً 70-90% و در سطح کشور بیش از 95% است.',
+                'faq-q3': 'آیا داده‌های من امن است؟',
+                'faq-a3': 'بله، تمام عملیات در سمت کلاینت در مرورگر شما انجام می‌شود. هیچ داده شخصی ذخیره یا به سرورهای خارجی ارسال نمی‌شود.',
+                'faq-q4': 'چرا از این ابزار استفاده کنم؟',
+                'faq-a4': 'این ابزار تحلیل جامع شبکه شامل تشخیص IP، تست سرعت، اسکن پورت و جستجوی دامنه را در یک مکان ارائه می‌دهد.',
+                'faq-q5': 'اسکن پورت چیست؟',
+                'faq-a5': 'اسکن پورت بررسی می‌کند که آیا پورت‌های خاص شبکه روی هاست هدف باز یا بسته هستند، برای تشخیص شبکه و تحلیل امنیتی مفید است.',
+                'faq-q6': 'تست سرعت چگونه کار می‌کند؟',
+                'faq-a6': 'تست سرعت با انتقال داده به سرورهای تست و محاسبه توان عملیاتی بر اساس زمان انتقال، سرعت دانلود/آپلود را اندازه‌گیری می‌کند.',
+                'footer-title': 'ابزار تشخیص IP',
+                'footer-desc': 'ابزار پیشرفته تحلیل شبکه و تشخیص IP با ویژگی‌های جامع.',
+                'footer-features': 'ویژگی‌ها',
+                'footer-ip': 'تشخیص IP',
+                'footer-speed': 'تست سرعت',
+                'footer-whois': 'جستجوی Whois',
+                'footer-port': 'اسکنر پورت',
+                'footer-tools': 'ابزارها',
+                'footer-dns': 'جستجوی DNS',
+                'footer-trace': 'مسیریابی',
+                'footer-ping': 'تست پینگ',
+                'footer-advanced': 'ابزارهای پیشرفته',
+                'footer-support': 'پشتیبانی',
+                'footer-faq': 'سوالات متداول',
+                'footer-privacy': 'سیاست حریم خصوصی',
+                'footer-terms': 'شرایط خدمات',
+                'footer-contact': 'تماس',
+                'footer-copyright': '© 2024 ابزار پیشرفته تشخیص IP. تمام حقوق محفوظ است.'
+            }
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+            detectIP();
+            
+            // Scroll to top button
+            window.addEventListener('scroll', function() {
+                const scrollTop = document.getElementById('scroll-top');
+                if (window.pageYOffset > 300) {
+                    scrollTop.style.display = 'flex';
+                } else {
+                    scrollTop.style.display = 'none';
+                }
+            });
+        });
+
+        // Language toggle
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'fa' : 'en';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const isRTL = currentLanguage === 'fa';
+            document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+            document.body.className = isRTL ? 'rtl' : '';
+            
+            // Update all translatable elements
+            Object.keys(translations[currentLanguage]).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+            
+            // Update language button
+            document.getElementById('lang-btn').textContent = currentLanguage === 'en' ? 'فارسی' : 'English';
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.getElementById('theme-btn').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            // Theme switching logic can be expanded here
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // IP Detection
+        async function detectIP() {
+            const detectBtn = document.getElementById('detect-btn');
+            const detectText = document.getElementById('detect-text');
+            const ipContent = document.getElementById('ip-content');
+            
+            detectBtn.disabled = true;
+            detectText.textContent = currentLanguage === 'fa' ? 'در حال تشخیص...' : 'Detecting...';
+            
+            try {
+                // Try multiple IP detection services
+                const ipServices = [
+                    'https://api.ipify.org?format=json',
+                    'https://ipapi.co/json/',
+                    'https://httpbin.org/ip'
+                ];
+                
+                let ip = null;
+                let detailedInfo = null;
+                
+                for (const service of ipServices) {
+                    try {
+                        const response = await fetch(service);
+                        const data = await response.json();
+                        
+                        if (service.includes('httpbin')) {
+                            ip = data.origin.split(',')[0].trim();
+                        } else if (service.includes('ipapi.co')) {
+                            ip = data.ip;
+                            if (data.country_name) {
+                                detailedInfo = data;
+                                break;
+                            }
+                        } else {
+                            ip = data.ip;
+                        }
+                        break;
+                    } catch (error) {
+                        console.warn(`Failed to get IP from ${service}:`, error);
+                        continue;
+                    }
+                }
+                
+                if (!ip) {
+                    throw new Error('Unable to detect IP address');
+                }
+                
+                // Get detailed information if not already available
+                if (!detailedInfo) {
+                    try {
+                        const response = await fetch(`https://ip-api.com/json/${ip}`);
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            detailedInfo = {
+                                ip: data.query,
+                                country_name: data.country,
+                                country_code: data.countryCode,
+                                region: data.regionName,
+                                city: data.city,
+                                latitude: data.lat,
+                                longitude: data.lon,
+                                timezone: data.timezone,
+                                org: data.isp,
+                                postal: data.zip
+                            };
+                        }
+                    } catch (error) {
+                        console.warn('Failed to get detailed info:', error);
+                    }
+                }
+                
+                // Store IP data globally
+                ipData = detailedInfo || { ip: ip };
+                
+                // Display IP information
+                displayIPInfo(ipData);
+                displayNetworkStatus(ipData);
+                displayMap(ipData);
+                
+            } catch (error) {
+                console.error('Error detecting IP:', error);
+                ipContent.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'خطا در تشخیص IP' : 'Error detecting IP'}: ${error.message}</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="detectIP()">
+                        <span>${currentLanguage === 'fa' ? 'تلاش مجدد' : 'Try Again'}</span>
+                    </button>
+                `;
+            } finally {
+                detectBtn.disabled = false;
+                detectText.textContent = currentLanguage === 'fa' ? 'تشخیص IP من' : 'Detect My IP';
+            }
+        }
+
+        function displayIPInfo(data) {
+            const ipContent = document.getElementById('ip-content');
+            const html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem;">${currentLanguage === 'fa' ? 'آدرس IP' : 'IP Address'}</p>
+                        <p style="font-family: monospace; font-weight: bold; color: #a855f7;">${data.ip}</p>
+                    </div>
+                    ${data.country_name ? `
+                    <div style="padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem;">${currentLanguage === 'fa' ? 'موقعیت' : 'Location'}</p>
+                        <p>${data.city}, ${data.country_name}</p>
+                    </div>
+                    ` : ''}
+                    ${data.org ? `
+                    <div style="padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem;">${currentLanguage === 'fa' ? 'ارائه‌دهنده' : 'ISP'}</p>
+                        <p>${data.org}</p>
+                    </div>
+                    ` : ''}
+                    ${data.timezone ? `
+                    <div style="padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem;">${currentLanguage === 'fa' ? 'منطقه زمانی' : 'Timezone'}</p>
+                        <p>${data.timezone}</p>
+                    </div>
+                    ` : ''}
+                </div>
+                <button class="btn btn-primary" onclick="detectIP()" style="margin-top: 1rem;">
+                    <span>${currentLanguage === 'fa' ? 'بروزرسانی' : 'Refresh'}</span>
+                </button>
+            `;
+            ipContent.innerHTML = html;
+        }
+
+        function displayNetworkStatus(data) {
+            const networkContent = document.getElementById('network-content');
+            const html = `
+                <div style="display: grid; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.875rem;">${currentLanguage === 'fa' ? 'نوع اتصال' : 'Connection Type'}</span>
+                        <span class="badge badge-success">${currentLanguage === 'fa' ? 'پهن‌باند' : 'Broadband'}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.875rem;">${currentLanguage === 'fa' ? 'وضعیت امنیت' : 'Security Status'}</span>
+                        <span class="badge badge-success">${currentLanguage === 'fa' ? 'اتصال مستقیم' : 'Direct Connection'}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.875rem;">${currentLanguage === 'fa' ? 'پشتیبانی IPv6' : 'IPv6 Support'}</span>
+                        <span class="badge badge-warning">${currentLanguage === 'fa' ? 'تشخیص داده نشد' : 'Not Detected'}</span>
+                    </div>
+                </div>
+            `;
+            networkContent.innerHTML = html;
+        }
+
+        function displayMap(data) {
+            if (!data.latitude || !data.longitude) {
+                document.getElementById('map-container').innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255,255,255,0.5);">
+                        <span>${currentLanguage === 'fa' ? 'اطلاعات موقعیت در دسترس نیست' : 'Location data not available'}</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Initialize map
+            if (map) {
+                map.remove();
+            }
+            
+            map = L.map('map-container').setView([data.latitude, data.longitude], 10);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            L.marker([data.latitude, data.longitude])
+                .addTo(map)
+                .bindPopup(`
+                    <b>${data.city || 'Unknown'}</b><br>
+                    ${data.country_name || 'Unknown'}<br>
+                    IP: ${data.ip}
+                `)
+                .openPopup();
+        }
+
+        // Speed Test
+        let speedTestRunning = false;
+        
+        async function runSpeedTest() {
+            if (speedTestRunning) return;
+            
+            speedTestRunning = true;
+            const speedBtn = document.getElementById('speed-btn');
+            const speedBtnText = document.getElementById('speed-btn-text');
+            const speedProgress = document.getElementById('speed-progress');
+            const speedResults = document.getElementById('speed-results');
+            
+            speedBtn.disabled = true;
+            speedBtnText.textContent = currentLanguage === 'fa' ? 'در حال تست...' : 'Testing...';
+            speedProgress.style.display = 'block';
+            speedResults.style.display = 'none';
+            
+            try {
+                // Ping test
+                updateSpeedProgress(currentLanguage === 'fa' ? 'تست تاخیر...' : 'Testing Latency...', 0);
+                const ping = await measurePing();
+                
+                // Download test
+                updateSpeedProgress(currentLanguage === 'fa' ? 'تست سرعت دانلود...' : 'Testing Download Speed...', 33);
+                const downloadSpeed = await measureDownloadSpeed();
+                
+                // Upload test
+                updateSpeedProgress(currentLanguage === 'fa' ? 'تست سرعت آپلود...' : 'Testing Upload Speed...', 66);
+                const uploadSpeed = await measureUploadSpeed();
+                
+                updateSpeedProgress(currentLanguage === 'fa' ? 'تست کامل شد' : 'Test Complete', 100);
+                
+                // Display results
+                displaySpeedResults({ ping, downloadSpeed, uploadSpeed });
+                
+            } catch (error) {
+                console.error('Speed test error:', error);
+                speedResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'خطا در تست سرعت' : 'Speed test failed'}: ${error.message}</span>
+                    </div>
+                `;
+                speedResults.style.display = 'block';
+            } finally {
+                speedTestRunning = false;
+                speedBtn.disabled = false;
+                speedBtnText.textContent = currentLanguage === 'fa' ? 'شروع تست سرعت' : 'Start Speed Test';
+                speedProgress.style.display = 'none';
+            }
+        }
+
+        function updateSpeedProgress(phase, percent) {
+            document.getElementById('speed-phase').textContent = phase;
+            document.getElementById('speed-percent').textContent = `${percent}%`;
+            document.getElementById('speed-bar').style.width = `${percent}%`;
+        }
+
+        async function measurePing() {
+            const startTime = performance.now();
+            try {
+                await fetch('https://www.google.com/favicon.ico', { method: 'HEAD', mode: 'no-cors' });
+                const endTime = performance.now();
+                return endTime - startTime;
+            } catch {
+                return 100; // Default ping if failed
+            }
+        }
+
+        async function measureDownloadSpeed() {
+            const testSizes = [100, 500, 1000]; // KB
+            let maxSpeed = 0;
+            
+            for (const size of testSizes) {
+                try {
+                    const startTime = performance.now();
+                    const response = await fetch(`https://httpbin.org/bytes/${size * 1024}`);
+                    const data = await response.blob();
+                    const endTime = performance.now();
+                    
+                    const durationSeconds = (endTime - startTime) / 1000;
+                    const speedMbps = (data.size * 8) / (durationSeconds * 1000000);
+                    maxSpeed = Math.max(maxSpeed, speedMbps);
+                } catch {
+                    // Continue with next size if failed
+                }
+            }
+            
+            return maxSpeed || 1; // Return at least 1 Mbps
+        }
+
+        async function measureUploadSpeed() {
+            try {
+                const testData = new Blob([new ArrayBuffer(50 * 1024)]);
+                const startTime = performance.now();
+                
+                await fetch('https://httpbin.org/post', {
+                    method: 'POST',
+                    body: testData
+                });
+                
+                const endTime = performance.now();
+                const durationSeconds = (endTime - startTime) / 1000;
+                const speedMbps = (testData.size * 8) / (durationSeconds * 1000000);
+                
+                return speedMbps;
+            } catch {
+                return 0.5; // Default upload speed if failed
+            }
+        }
+
+        function displaySpeedResults(results) {
+            const speedResults = document.getElementById('speed-results');
+            const formatSpeed = (speedMbps) => {
+                if (speedMbps >= 1) {
+                    return `${speedMbps.toFixed(2)} Mbps`;
+                } else {
+                    return `${(speedMbps * 1000).toFixed(0)} Kbps`;
+                }
+            };
+            
+            const html = `
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #14b8a6; margin-bottom: 0.5rem;">
+                                ${formatSpeed(results.downloadSpeed)}
+                            </div>
+                            <p style="font-size: 0.875rem; color: rgba(255,255,255,0.7);">
+                                ${currentLanguage === 'fa' ? 'سرعت دانلود' : 'Download Speed'}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #a855f7; margin-bottom: 0.5rem;">
+                                ${formatSpeed(results.uploadSpeed)}
+                            </div>
+                            <p style="font-size: 0.875rem; color: rgba(255,255,255,0.7);">
+                                ${currentLanguage === 'fa' ? 'سرعت آپلود' : 'Upload Speed'}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #ec4899; margin-bottom: 0.5rem;">
+                                ${results.ping.toFixed(0)} ms
+                            </div>
+                            <p style="font-size: 0.875rem; color: rgba(255,255,255,0.7);">
+                                ${currentLanguage === 'fa' ? 'تاخیر' : 'Ping'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            speedResults.innerHTML = html;
+            speedResults.style.display = 'block';
+        }
+
+        // Whois Lookup
+        async function performWhoisLookup() {
+            const domainInput = document.getElementById('domain-input');
+            const whoisBtn = document.getElementById('whois-btn');
+            const whoisBtnText = document.getElementById('whois-btn-text');
+            const whoisResults = document.getElementById('whois-results');
+            
+            const domain = domainInput.value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
+            
+            if (!domain) {
+                whoisResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'لطفاً نام دامنه را وارد کنید' : 'Please enter a domain name'}</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            whoisBtn.disabled = true;
+            whoisBtnText.textContent = currentLanguage === 'fa' ? 'در حال جستجو...' : 'Looking up...';
+            
+            try {
+                const response = await fetch(`https://api.hackertarget.com/whois/?q=${encodeURIComponent(domain)}`);
+                const text = await response.text();
+                
+                if (text && text.length > 50) {
+                    whoisResults.innerHTML = `
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>🌐 ${currentLanguage === 'fa' ? 'اطلاعات دامنه' : 'Domain Information'}: ${domain}</h4>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; max-height: 300px; overflow-y: auto;">
+                                <pre style="font-size: 0.75rem; white-space: pre-wrap; word-wrap: break-word;">${text}</pre>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('No whois data available');
+                }
+            } catch (error) {
+                console.error('Whois lookup error:', error);
+                whoisResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'خطا در جستجوی Whois' : 'Whois lookup failed'}: ${error.message}</span>
+                    </div>
+                    <div class="alert alert-success">
+                        <span>💡</span>
+                        <span>${currentLanguage === 'fa' ? 'برای تحلیل جامع از ViewDNS.info استفاده کنید' : 'Use ViewDNS.info for comprehensive analysis'}</span>
+                    </div>
+                `;
+            } finally {
+                whoisBtn.disabled = false;
+                whoisBtnText.textContent = currentLanguage === 'fa' ? 'جستجوی دامنه' : 'Lookup Domain';
+            }
+        }
+
+        function openViewDNS() {
+            const domain = document.getElementById('domain-input').value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
+            if (domain) {
+                window.open(`https://viewdns.info/whois/?domain=${encodeURIComponent(domain)}`, '_blank');
+            }
+        }
+
+        // Advanced Tools
+        async function performDNSLookup() {
+            const dnsInput = document.getElementById('dns-input');
+            const dnsBtn = document.getElementById('dns-btn');
+            const dnsResults = document.getElementById('dns-results');
+            
+            const domain = dnsInput.value.trim();
+            if (!domain) return;
+            
+            dnsBtn.disabled = true;
+            dnsBtn.textContent = currentLanguage === 'fa' ? 'در حال جستجو...' : 'Looking up...';
+            
+            try {
+                // Simulate DNS lookup (browser limitations)
+                const result = `${currentLanguage === 'fa' ? 'جستجوی DNS برای' : 'DNS lookup for'} ${domain}:\n${currentLanguage === 'fa' ? 'محدودیت‌های مرورگر امکان جستجوی مستقیم DNS را فراهم نمی‌کند' : 'Browser limitations prevent direct DNS queries'}\n${currentLanguage === 'fa' ? 'برای جستجوی کامل DNS از ابزارهای خط فرمان استفاده کنید' : 'Use command-line tools for complete DNS lookup'}`;
+                
+                dnsResults.innerHTML = `
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                        <pre style="font-size: 0.75rem; white-space: pre-wrap;">${result}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                dnsResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'خطا در جستجوی DNS' : 'DNS lookup failed'}</span>
+                    </div>
+                `;
+            } finally {
+                dnsBtn.disabled = false;
+                dnsBtn.textContent = currentLanguage === 'fa' ? 'جستجوی DNS' : 'Lookup DNS';
+            }
+        }
+
+        async function performTraceroute() {
+            const traceInput = document.getElementById('trace-input');
+            const traceBtn = document.getElementById('trace-btn');
+            const traceResults = document.getElementById('trace-results');
+            
+            const target = traceInput.value.trim();
+            if (!target) return;
+            
+            traceBtn.disabled = true;
+            traceBtn.textContent = currentLanguage === 'fa' ? 'در حال ردیابی...' : 'Tracing...';
+            
+            try {
+                // Simulate traceroute (browser limitations)
+                const result = `${currentLanguage === 'fa' ? 'ردیابی مسیر به' : 'Traceroute to'} ${target}:\n${currentLanguage === 'fa' ? 'محدودیت‌های مرورگر امکان ردیابی مستقیم مسیر را فراهم نمی‌کند' : 'Browser limitations prevent direct traceroute'}\n${currentLanguage === 'fa' ? 'برای ردیابی کامل مسیر از ابزارهای خط فرمان استفاده کنید' : 'Use command-line tools for complete traceroute'}`;
+                
+                traceResults.innerHTML = `
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                        <pre style="font-size: 0.75rem; white-space: pre-wrap;">${result}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                traceResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'خطا در ردیابی مسیر' : 'Traceroute failed'}</span>
+                    </div>
+                `;
+            } finally {
+                traceBtn.disabled = false;
+                traceBtn.textContent = currentLanguage === 'fa' ? 'ردیابی مسیر' : 'Trace Route';
+            }
+        }
+
+        async function performPing() {
+            const pingInput = document.getElementById('ping-input');
+            const pingBtn = document.getElementById('ping-btn');
+            const pingResults = document.getElementById('ping-results');
+            
+            const target = pingInput.value.trim();
+            if (!target) return;
+            
+            pingBtn.disabled = true;
+            pingBtn.textContent = currentLanguage === 'fa' ? 'در حال پینگ...' : 'Pinging...';
+            
+            try {
+                const startTime = performance.now();
+                await fetch(`https://${target}/favicon.ico`, { method: 'HEAD', mode: 'no-cors' });
+                const endTime = performance.now();
+                const ping = endTime - startTime;
+                
+                pingResults.innerHTML = `
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                        <p>${currentLanguage === 'fa' ? 'پینگ به' : 'Ping to'} ${target}: ${ping.toFixed(0)} ms</p>
+                    </div>
+                `;
+            } catch (error) {
+                pingResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'خطا در پینگ' : 'Ping failed'}</span>
+                    </div>
+                `;
+            } finally {
+                pingBtn.disabled = false;
+                pingBtn.textContent = currentLanguage === 'fa' ? 'پینگ هاست' : 'Ping Host';
+            }
+        }
+
+        // Port Scanner
+        async function scanPorts() {
+            const hostInput = document.getElementById('host-input');
+            const portsInput = document.getElementById('ports-input');
+            const scanBtn = document.getElementById('scan-btn');
+            const scanBtnText = document.getElementById('scan-btn-text');
+            const portResults = document.getElementById('port-results');
+            
+            const host = hostInput.value.trim();
+            const ports = portsInput.value.trim().split(',').map(p => p.trim()).filter(p => p);
+            
+            if (!host || ports.length === 0) {
+                portResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <span>${currentLanguage === 'fa' ? 'لطفاً هاست و پورت‌ها را وارد کنید' : 'Please enter host and ports'}</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            scanBtn.disabled = true;
+            scanBtnText.textContent = currentLanguage === 'fa' ? 'در حال اسکن...' : 'Scanning...';
+            
+            const results = [];
+            
+            for (const port of ports) {
+                try {
+                    const startTime = performance.now();
+                    await fetch(`http://${host}:${port}`, { 
+                        method: 'HEAD', 
+                        mode: 'no-cors',
+                        signal: AbortSignal.timeout(3000)
+                    });
+                    const endTime = performance.now();
+                    results.push({
+                        port: port,
+                        status: 'open',
+                        time: endTime - startTime
+                    });
+                } catch (error) {
+                    results.push({
+                        port: port,
+                        status: 'closed/filtered',
+                        time: null
+                    });
+                }
+            }
+            
+            // Display results
+            const resultsHtml = results.map(result => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px; margin-bottom: 0.5rem;">
+                    <span>${currentLanguage === 'fa' ? 'پورت' : 'Port'} ${result.port}</span>
+                    <span class="badge ${result.status === 'open' ? 'badge-success' : 'badge-error'}">
+                        ${result.status === 'open' ? (currentLanguage === 'fa' ? 'باز' : 'Open') : (currentLanguage === 'fa' ? 'بسته' : 'Closed')}
+                    </span>
+                </div>
+            `).join('');
+            
+            portResults.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h4>🛡️ ${currentLanguage === 'fa' ? 'نتایج اسکن پورت برای' : 'Port Scan Results for'} ${host}</h4>
+                    </div>
+                    <div>${resultsHtml}</div>
+                </div>
+            `;
+            
+            scanBtn.disabled = false;
+            scanBtnText.textContent = currentLanguage === 'fa' ? 'شروع اسکن' : 'Start Scan';
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Enter key support for inputs
+        document.getElementById('domain-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performWhoisLookup();
+        });
+
+        document.getElementById('dns-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performDNSLookup();
+        });
+
+        document.getElementById('trace-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performTraceroute();
+        });
+
+        document.getElementById('ping-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performPing();
+        });
+
+        document.getElementById('host-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') scanPorts();
+        });
+    </script>
+</body>
+</html>

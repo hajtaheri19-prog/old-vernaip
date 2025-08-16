@@ -363,22 +363,21 @@ export default function IPDetectionApp() {
 
   return (
     <div className={`min-h-screen relative overflow-hidden ${isRTL ? "rtl font-persian" : ""}`}>
-      {/* Enhanced background with animated particles */}
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-teal-900/20 animate-gradient-xy"></div>
-      <div className="fixed inset-0 bg-black/10 backdrop-blur-sm"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-teal-900/20 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-teal-900/20 light:from-purple-100/30 light:via-blue-100/30 light:to-teal-100/30 animate-gradient-xy"></div>
+      <div className="fixed inset-0 bg-black/10 dark:bg-black/10 light:bg-white/20 backdrop-blur-sm"></div>
 
       {/* Animated background particles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400/30 rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-teal-400/40 rounded-full animate-ping"></div>
-        <div className="absolute top-1/2 left-3/4 w-3 h-3 bg-blue-400/20 rounded-full animate-bounce"></div>
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400/30 dark:bg-purple-400/30 light:bg-purple-600/50 rounded-full animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-teal-400/40 dark:bg-teal-400/40 light:bg-teal-600/60 rounded-full animate-ping"></div>
+        <div className="absolute top-1/2 left-3/4 w-3 h-3 bg-blue-400/20 dark:bg-blue-400/20 light:bg-blue-600/40 rounded-full animate-bounce"></div>
       </div>
 
-      <nav className="sticky top-0 z-50 bg-black/30 backdrop-blur-xl border-b border-white/20 shadow-2xl">
+      <nav className="sticky top-0 z-50 bg-black/30 dark:bg-black/30 light:bg-white/80 backdrop-blur-xl border-b border-white/20 dark:border-white/20 light:border-gray-200 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 lg:gap-8">
-              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-teal-400 bg-clip-text text-transparent">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-teal-400 dark:from-purple-400 dark:via-pink-400 dark:to-teal-400 light:from-purple-600 light:via-pink-600 light:to-teal-600 bg-clip-text text-transparent">
                 {t("app.title")}
               </h1>
               <div className="hidden md:flex gap-1">
@@ -388,7 +387,7 @@ export default function IPDetectionApp() {
                     variant="ghost"
                     size="sm"
                     onClick={() => scrollToSection(item.ref)}
-                    className="text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300 rounded-xl px-3 py-2 text-xs lg:text-sm"
+                    className="text-white/80 dark:text-white/80 light:text-gray-700 hover:text-white dark:hover:text-white light:hover:text-gray-900 hover:bg-white/20 dark:hover:bg-white/20 light:hover:bg-gray-100 transition-all duration-300 rounded-xl px-3 py-2 text-xs lg:text-sm"
                   >
                     <item.icon className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2" />
                     <span className="hidden lg:inline">{item.name}</span>
@@ -402,21 +401,21 @@ export default function IPDetectionApp() {
                 variant="outline"
                 size="icon"
                 onClick={() => setLanguage(language === "en" ? "fa" : "en")}
-                className="bg-white/10 backdrop-blur-md border-white/30 hover:bg-white/20 transition-all duration-300 rounded-xl w-8 h-8 sm:w-10 sm:h-10"
+                className="bg-white/10 dark:bg-white/10 light:bg-gray-100 backdrop-blur-md border-white/30 dark:border-white/30 light:border-gray-300 hover:bg-white/20 dark:hover:bg-white/20 light:hover:bg-gray-200 transition-all duration-300 rounded-xl w-8 h-8 sm:w-10 sm:h-10"
               >
-                <Languages className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Languages className="h-3 w-3 sm:h-4 sm:w-4 text-white dark:text-white light:text-gray-700" />
               </Button>
 
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="bg-white/10 backdrop-blur-md border-white/30 hover:bg-white/20 transition-all duration-300 rounded-xl w-8 h-8 sm:w-10 sm:h-10"
+                className="bg-white/10 dark:bg-white/10 light:bg-gray-100 backdrop-blur-md border-white/30 dark:border-white/30 light:border-gray-300 hover:bg-white/20 dark:hover:bg-white/20 light:hover:bg-gray-200 transition-all duration-300 rounded-xl w-8 h-8 sm:w-10 sm:h-10"
               >
                 {theme === "dark" ? (
-                  <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Sun className="h-3 w-3 sm:h-4 sm:w-4 text-white dark:text-white light:text-gray-700" />
                 ) : (
-                  <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Moon className="h-3 w-3 sm:h-4 sm:w-4 text-white dark:text-white light:text-gray-700" />
                 )}
               </Button>
             </div>
@@ -426,22 +425,31 @@ export default function IPDetectionApp() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-3 space-y-4 lg:space-y-5">
         <header className="text-center space-y-1 lg:space-y-2 py-1 lg:py-2">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-teal-400 bg-clip-text text-transparent animate-pulse">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-teal-400 dark:from-purple-400 dark:via-pink-400 dark:to-teal-400 light:from-purple-600 light:via-pink-600 light:to-teal-600 bg-clip-text text-transparent animate-pulse">
             {t("app.title")}
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground dark:text-gray-300 light:text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
             {t("app.subtitle")}
           </p>
           <div className="flex flex-wrap justify-center gap-1 lg:gap-2 mt-2 lg:mt-3">
-            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 text-xs">
+            <Badge
+              variant="outline"
+              className="bg-white/10 dark:bg-white/10 light:bg-gray-100 backdrop-blur-md border-white/20 dark:border-white/20 light:border-gray-300 px-2 py-1 text-xs text-white dark:text-white light:text-gray-700"
+            >
               <Globe className="w-3 h-3 mr-1" />
               {t("nav.ip-detection")}
             </Badge>
-            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 text-xs">
+            <Badge
+              variant="outline"
+              className="bg-white/10 dark:bg-white/10 light:bg-gray-100 backdrop-blur-md border-white/20 dark:border-white/20 light:border-gray-300 px-2 py-1 text-xs text-white dark:text-white light:text-gray-700"
+            >
               <Shield className="w-3 h-3 mr-1" />
               {t("network.title") || "Network Analysis"}
             </Badge>
-            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 text-xs">
+            <Badge
+              variant="outline"
+              className="bg-white/10 dark:bg-white/10 light:bg-gray-100 backdrop-blur-md border-white/20 dark:border-white/20 light:border-gray-300 px-2 py-1 text-xs text-white dark:text-white light:text-gray-700"
+            >
               <Zap className="w-3 h-3 mr-1" />
               {t("speed.title")}
             </Badge>
@@ -450,22 +458,24 @@ export default function IPDetectionApp() {
 
         <section ref={ipSectionRef} className="space-y-2 lg:space-y-3">
           <div className="text-center space-y-1">
-            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-purple-400 to-teal-400 dark:from-purple-400 dark:to-teal-400 light:from-purple-600 light:to-teal-600 bg-clip-text text-transparent">
               {t("ip.title")}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-            {/* IP Information Card */}
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
+            <Card className="bg-white/10 dark:bg-white/10 light:bg-white/80 backdrop-blur-md border-white/20 dark:border-white/20 light:border-gray-200 shadow-xl">
               <CardHeader className="pb-1">
-                <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm lg:text-base">
+                <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm lg:text-base text-white dark:text-white light:text-gray-800">
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4" />
                     {t("ip.detailed-info") || "IP Information"}
                   </div>
                   {detectionTime && (
-                    <Badge variant="outline" className="sm:ml-auto text-xs">
+                    <Badge
+                      variant="outline"
+                      className="sm:ml-auto text-xs text-white dark:text-white light:text-gray-700"
+                    >
                       <Clock className="w-3 h-3 mr-1" />
                       {detectionTime}ms
                     </Badge>
@@ -474,66 +484,88 @@ export default function IPDetectionApp() {
               </CardHeader>
               <CardContent className="pt-0">
                 {error && (
-                  <Alert className="mb-2 bg-red-500/10 border-red-500/20">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription className="text-xs">{error}</AlertDescription>
+                  <Alert className="mb-2 bg-red-500/10 dark:bg-red-500/10 light:bg-red-100/30 border-red-500/20 dark:border-red-500/20 light:border-red-300">
+                    <AlertTriangle className="h-4 w-4 text-red-500 dark:text-red-500 light:text-red-700" />
+                    <AlertDescription className="text-xs text-red-500 dark:text-red-500 light:text-red-700">
+                      {error}
+                    </AlertDescription>
                   </Alert>
                 )}
 
                 {loading ? (
                   <div className="flex items-center justify-center py-3">
-                    <RefreshCw className="animate-spin h-4 w-4 mr-2" />
-                    <span className="text-muted-foreground text-xs">{t("ip.detecting")}</span>
+                    <RefreshCw className="animate-spin h-4 w-4 mr-2 text-white dark:text-white light:text-gray-700" />
+                    <span className="text-muted-foreground text-xs text-white dark:text-white light:text-gray-700">
+                      {t("ip.detecting")}
+                    </span>
                   </div>
                 ) : ipInfo ? (
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 gap-2">
-                      <div className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
+                      <div className="flex items-center justify-between p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs text-muted-foreground">{t("ip.address")}</p>
-                          <p className="font-mono text-xs lg:text-sm font-bold text-purple-400 truncate">{ipInfo.ip}</p>
+                          <p className="text-xs text-muted-foreground text-white dark:text-white light:text-gray-700">
+                            {t("ip.address")}
+                          </p>
+                          <p className="font-mono text-xs lg:text-sm font-bold text-purple-400 dark:text-purple-400 light:text-purple-700 truncate">
+                            {ipInfo.ip}
+                          </p>
                         </div>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => copyToClipboard(ipInfo.ip, "ip")}
-                          className="h-5 w-5 flex-shrink-0"
+                          className="h-5 w-5 flex-shrink-0 text-white dark:text-white light:text-gray-700"
                         >
                           {copiedField === "ip" ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                         </Button>
                       </div>
 
-                      <div className="p-2 bg-white/5 rounded-lg">
-                        <p className="text-xs text-muted-foreground">{t("ip.location")}</p>
-                        <p className="text-xs lg:text-sm">
+                      <div className="p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                        <p className="text-xs text-muted-foreground text-white dark:text-white light:text-gray-700">
+                          {t("ip.location")}
+                        </p>
+                        <p className="text-xs lg:text-sm text-white dark:text-white light:text-gray-700">
                           {ipInfo.city}, {ipInfo.regionName}, {ipInfo.country}
                         </p>
                       </div>
 
-                      <div className="p-2 bg-white/5 rounded-lg">
-                        <p className="text-xs text-muted-foreground">{t("ip.coordinates")}</p>
-                        <p className="font-mono text-xs">
+                      <div className="p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                        <p className="text-xs text-muted-foreground text-white dark:text-white light:text-gray-700">
+                          {t("ip.coordinates")}
+                        </p>
+                        <p className="font-mono text-xs text-white dark:text-white light:text-gray-700">
                           {ipInfo.lat.toFixed(4)}, {ipInfo.lon.toFixed(4)}
                         </p>
                       </div>
 
-                      <div className="p-2 bg-white/5 rounded-lg">
-                        <p className="text-xs text-muted-foreground">{t("ip.isp")}</p>
-                        <p className="font-medium text-xs truncate">{ipInfo.isp}</p>
+                      <div className="p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                        <p className="text-xs text-muted-foreground text-white dark:text-white light:text-gray-700">
+                          {t("ip.isp")}
+                        </p>
+                        <p className="font-medium text-xs truncate text-white dark:text-white light:text-gray-700">
+                          {ipInfo.isp}
+                        </p>
                       </div>
 
-                      <div className="p-2 bg-white/5 rounded-lg">
-                        <p className="text-xs text-muted-foreground">{t("ip.timezone")}</p>
-                        <p className="font-medium text-xs">{ipInfo.timezone}</p>
+                      <div className="p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                        <p className="text-xs text-muted-foreground text-white dark:text-white light:text-gray-700">
+                          {t("ip.timezone")}
+                        </p>
+                        <p className="font-medium text-xs text-white dark:text-white light:text-gray-700">
+                          {ipInfo.timezone}
+                        </p>
                       </div>
                     </div>
 
                     <Button
                       onClick={detectIP}
                       disabled={loading}
-                      className="w-full bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600 text-xs py-2"
+                      className="w-full bg-gradient-to-r from-purple-500 to-teal-500 dark:from-purple-500 dark:to-teal-500 light:from-purple-600 light:to-teal-600 hover:from-purple-600 hover:to-teal-600 dark:hover:from-purple-600 dark:hover:to-teal-600 light:hover:from-purple-700 light:hover:to-teal-700 text-xs py-2"
                     >
-                      <RefreshCw className={`w-3 h-3 mr-2 ${loading ? "animate-spin" : ""}`} />
+                      <RefreshCw
+                        className={`w-3 h-3 mr-2 text-white dark:text-white light:text-gray-700 ${loading ? "animate-spin" : ""}`}
+                      />
                       {loading ? t("ip.detecting") : t("ip.refresh")}
                     </Button>
                   </div>
@@ -541,9 +573,9 @@ export default function IPDetectionApp() {
                   <Button
                     onClick={detectIP}
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-purple-500 to-teal-500 text-xs py-2"
+                    className="w-full bg-gradient-to-r from-purple-500 to-teal-500 dark:from-purple-500 dark:to-teal-500 light:from-purple-600 light:to-teal-600 text-xs py-2"
                   >
-                    <Globe className="w-3 h-3 mr-2" />
+                    <Globe className="w-3 h-3 mr-2 text-white dark:text-white light:text-gray-700" />
                     {t("ip.detect") || "Detect My IP"}
                   </Button>
                 )}
@@ -551,9 +583,9 @@ export default function IPDetectionApp() {
             </Card>
 
             {/* Network Status Card */}
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
+            <Card className="bg-white/10 dark:bg-white/10 light:bg-white/80 backdrop-blur-md border-white/20 dark:border-white/20 light:border-gray-200 shadow-xl">
               <CardHeader className="pb-1">
-                <CardTitle className="flex items-center gap-2 text-sm lg:text-base">
+                <CardTitle className="flex items-center gap-2 text-sm lg:text-base text-white dark:text-white light:text-gray-800">
                   <Wifi className="w-4 h-4" />
                   {t("network.title") || "Network Status"}
                 </CardTitle>
@@ -561,39 +593,53 @@ export default function IPDetectionApp() {
               <CardContent className="pt-0">
                 {networkStatus ? (
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
-                      <span className="text-xs">{t("network.connection") || "Connection"}</span>
-                      <Badge variant="secondary" className="text-xs px-1 py-0">
+                    <div className="flex justify-between items-center p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                      <span className="text-xs text-white dark:text-white light:text-gray-700">
+                        {t("network.connection") || "Connection"}
+                      </span>
+                      <Badge
+                        variant="secondary"
+                        className="text-xs px-1 py-0 text-white dark:text-white light:text-gray-700"
+                      >
                         {networkStatus.connectionType === "Mobile"
                           ? t("network.mobile") || "Mobile"
                           : t("network.broadband") || "Broadband"}
                       </Badge>
                     </div>
-                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
-                      <span className="text-xs">{t("network.security") || "Security"}</span>
+                    <div className="flex justify-between items-center p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                      <span className="text-xs text-white dark:text-white light:text-gray-700">
+                        {t("network.security") || "Security"}
+                      </span>
                       <Badge
                         variant={networkStatus.securityStatus.includes("Proxy") ? "destructive" : "default"}
-                        className="text-xs px-1 py-0"
+                        className="text-xs px-1 py-0 text-white dark:text-white light:text-gray-700"
                       >
                         {networkStatus.securityStatus.includes("Proxy")
                           ? t("network.proxy") || "Proxy"
                           : t("network.direct") || "Direct"}
                       </Badge>
                     </div>
-                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
-                      <span className="text-xs">{t("network.ipv6") || "IPv6"}</span>
+                    <div className="flex justify-between items-center p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                      <span className="text-xs text-white dark:text-white light:text-gray-700">
+                        {t("network.ipv6") || "IPv6"}
+                      </span>
                       <Badge
                         variant={networkStatus.ipv6Support ? "default" : "secondary"}
-                        className="text-xs px-1 py-0"
+                        className="text-xs px-1 py-0 text-white dark:text-white light:text-gray-700"
                       >
                         {networkStatus.ipv6Support
                           ? t("network.supported") || "Supported"
                           : t("network.not-supported") || "Not Supported"}
                       </Badge>
                     </div>
-                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
-                      <span className="text-xs">{t("network.response-time") || "Response Time"}</span>
-                      <Badge variant="outline" className="text-xs px-1 py-0">
+                    <div className="flex justify-between items-center p-2 bg-white/5 dark:bg-white/5 light:bg-gray-50 rounded-lg">
+                      <span className="text-xs text-white dark:text-white light:text-gray-700">
+                        {t("network.response-time") || "Response Time"}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="text-xs px-1 py-0 text-white dark:text-white light:text-gray-700"
+                      >
                         {networkStatus.responseTime}ms
                       </Badge>
                     </div>
@@ -601,8 +647,10 @@ export default function IPDetectionApp() {
                 ) : (
                   <div className="space-y-1">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs">{t("network.connection") || "Connection"}</span>
-                      <Badge variant="outline" className="text-xs">
+                      <span className="text-xs text-white dark:text-white light:text-gray-700">
+                        {t("network.connection") || "Connection"}
+                      </span>
+                      <Badge variant="outline" className="text-xs text-white dark:text-white light:text-gray-700">
                         {t("network.detecting") || "Detecting..."}
                       </Badge>
                     </div>
@@ -616,10 +664,12 @@ export default function IPDetectionApp() {
         {/* Speed Test Section - More compact */}
         <section ref={speedSectionRef} className="space-y-2 lg:space-y-3">
           <div className="text-center space-y-1">
-            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-orange-400 to-red-400 dark:from-orange-400 dark:to-red-400 light:from-orange-600 light:to-red-600 bg-clip-text text-transparent">
               {t("speed.title")}
             </h2>
-            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("speed.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground dark:text-gray-300 light:text-gray-600 max-w-xl mx-auto px-4">
+              {t("speed.subtitle")}
+            </p>
           </div>
           <SpeedTest />
         </section>
@@ -627,10 +677,12 @@ export default function IPDetectionApp() {
         {/* Whois Lookup Section - More compact */}
         <section ref={whoisSectionRef} className="space-y-2 lg:space-y-3">
           <div className="text-center space-y-1">
-            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-green-400 to-blue-400 dark:from-green-400 dark:to-blue-400 light:from-green-600 light:to-blue-600 bg-clip-text text-transparent">
               {t("whois.title")}
             </h2>
-            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("whois.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground dark:text-gray-300 light:text-gray-600 max-w-xl mx-auto px-4">
+              {t("whois.subtitle")}
+            </p>
           </div>
           <WhoisLookup />
         </section>
@@ -638,10 +690,10 @@ export default function IPDetectionApp() {
         {/* Advanced Tools Section - More compact */}
         <section ref={toolsSectionRef} className="space-y-2 lg:space-y-3">
           <div className="text-center space-y-1">
-            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-cyan-400 to-purple-400 dark:from-cyan-400 dark:to-purple-400 light:from-cyan-600 light:to-purple-600 bg-clip-text text-transparent">
               {t("tools.title") || "Advanced Tools"}
             </h2>
-            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">
+            <p className="text-sm lg:text-base text-muted-foreground dark:text-gray-300 light:text-gray-600 max-w-xl mx-auto px-4">
               {t("tools.subtitle") || "Advanced network analysis tools"}
             </p>
           </div>
@@ -651,10 +703,12 @@ export default function IPDetectionApp() {
         {/* Port Scanner Section - More compact */}
         <section ref={portSectionRef} className="space-y-2 lg:space-y-3">
           <div className="text-center space-y-1">
-            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-red-400 to-pink-400 dark:from-red-400 dark:to-pink-400 light:from-red-600 light:to-pink-600 bg-clip-text text-transparent">
               {t("port.title")}
             </h2>
-            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("port.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground dark:text-gray-300 light:text-gray-600 max-w-xl mx-auto px-4">
+              {t("port.subtitle")}
+            </p>
           </div>
           <PortScanner />
         </section>
@@ -662,23 +716,29 @@ export default function IPDetectionApp() {
         {/* FAQ Section - More compact grid */}
         <section ref={faqSectionRef} className="space-y-2 lg:space-y-3">
           <div className="text-center space-y-1">
-            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-indigo-400 to-purple-400 dark:from-indigo-400 dark:to-purple-400 light:from-indigo-600 light:to-purple-600 bg-clip-text text-transparent">
               {t("faq.title")}
             </h2>
-            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("faq.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground dark:text-gray-300 light:text-gray-600 max-w-xl mx-auto px-4">
+              {t("faq.subtitle")}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-3 max-w-6xl mx-auto">
             {[1, 2, 3, 4, 5, 6].map((num) => (
               <Card
                 key={num}
-                className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl hover:bg-white/15 transition-all duration-300"
+                className="bg-white/10 dark:bg-white/10 light:bg-white/80 backdrop-blur-md border-white/20 dark:border-white/20 light:border-gray-200 shadow-xl hover:bg-white/15 dark:hover:bg-white/15 light:hover:bg-white/90 transition-all duration-300"
               >
                 <CardHeader className="pb-1">
-                  <CardTitle className="text-xs lg:text-sm text-purple-300">{t(`faq.q${num}`)}</CardTitle>
+                  <CardTitle className="text-xs lg:text-sm text-purple-300 dark:text-purple-300 light:text-purple-700">
+                    {t(`faq.q${num}`)}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-muted-foreground leading-relaxed text-xs">{t(`faq.a${num}`)}</p>
+                  <p className="text-muted-foreground dark:text-gray-300 light:text-gray-600 leading-relaxed text-xs">
+                    {t(`faq.a${num}`)}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -686,20 +746,22 @@ export default function IPDetectionApp() {
         </section>
 
         {/* Footer - More compact */}
-        <footer className="border-t border-white/20 pt-3 lg:pt-4 pb-2 lg:pb-3 mt-4 lg:mt-6">
+        <footer className="border-t border-white/20 dark:border-white/20 light:border-gray-200 pt-3 lg:pt-4 pb-2 lg:pb-3 mt-4 lg:mt-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 mb-3 lg:mb-4">
             <div className="space-y-1">
-              <h3 className="text-sm lg:text-base font-bold bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
+              <h3 className="text-sm lg:text-base font-bold bg-gradient-to-r from-purple-400 to-teal-400 dark:from-purple-400 dark:to-teal-400 light:from-purple-600 light:to-teal-600 bg-clip-text text-transparent">
                 {t("footer.title") || "Advanced IP Detection"}
               </h3>
-              <p className="text-muted-foreground text-xs leading-relaxed">
+              <p className="text-muted-foreground dark:text-gray-300 light:text-gray-600 text-xs leading-relaxed">
                 {t("footer.description") || "Professional network analysis tools"}
               </p>
             </div>
 
             <div className="space-y-1">
-              <h4 className="font-semibold text-white text-xs">{t("footer.features") || "Features"}</h4>
-              <ul className="space-y-0.5 text-xs text-muted-foreground">
+              <h4 className="font-semibold text-white dark:text-white light:text-gray-800 text-xs">
+                {t("footer.features") || "Features"}
+              </h4>
+              <ul className="space-y-0.5 text-xs text-muted-foreground dark:text-gray-300 light:text-gray-600">
                 <li>{t("nav.ip-detection")}</li>
                 <li>{t("nav.speed-test")}</li>
                 <li>{t("nav.whois")}</li>
@@ -708,8 +770,10 @@ export default function IPDetectionApp() {
             </div>
 
             <div className="space-y-1">
-              <h4 className="font-semibold text-white text-xs">{t("footer.tools") || "Tools"}</h4>
-              <ul className="space-y-0.5 text-xs text-muted-foreground">
+              <h4 className="font-semibold text-white dark:text-white light:text-gray-800 text-xs">
+                {t("footer.tools") || "Tools"}
+              </h4>
+              <ul className="space-y-0.5 text-xs text-muted-foreground dark:text-gray-300 light:text-gray-600">
                 <li>{t("nav.advanced-tools") || "Advanced Tools"}</li>
                 <li>{t("tools.dns-lookup") || "DNS Lookup"}</li>
                 <li>{t("tools.traceroute") || "Traceroute"}</li>
@@ -717,8 +781,10 @@ export default function IPDetectionApp() {
             </div>
 
             <div className="space-y-1">
-              <h4 className="font-semibold text-white text-xs">{t("footer.support") || "Support"}</h4>
-              <ul className="space-y-0.5 text-xs text-muted-foreground">
+              <h4 className="font-semibold text-white dark:text-white light:text-gray-800 text-xs">
+                {t("footer.support") || "Support"}
+              </h4>
+              <ul className="space-y-0.5 text-xs text-muted-foreground dark:text-gray-300 light:text-gray-600">
                 <li>{t("nav.faq")}</li>
                 <li>{t("footer.privacy") || "Privacy Policy"}</li>
                 <li>{t("footer.terms") || "Terms of Service"}</li>
@@ -727,11 +793,13 @@ export default function IPDetectionApp() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-2 lg:pt-3 text-center space-y-1">
-            <p className="text-muted-foreground text-xs">
+          <div className="border-t border-white/10 dark:border-white/10 light:border-gray-200 pt-2 lg:pt-3 text-center space-y-1">
+            <p className="text-muted-foreground dark:text-gray-300 light:text-gray-600 text-xs">
               {t("footer.copyright") || "© 2024 Advanced IP Detection. All rights reserved."}
             </p>
-            <p className="text-muted-foreground text-xs">{t("footer.developer")}</p>
+            <p className="text-muted-foreground dark:text-gray-300 light:text-gray-600 text-xs">
+              {t("footer.developer")}
+            </p>
           </div>
         </footer>
       </div>
@@ -740,10 +808,10 @@ export default function IPDetectionApp() {
       {showScrollTop && (
         <Button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 lg:bottom-8 lg:right-8 z-50 rounded-full w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600 shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 animate-bounce"
+          className="fixed bottom-6 right-6 lg:bottom-8 lg:right-8 z-50 rounded-full w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-r from-purple-500 to-teal-500 dark:from-purple-500 dark:to-teal-500 light:from-purple-600 light:to-teal-600 hover:from-purple-600 hover:to-teal-600 dark:hover:from-purple-600 dark:hover:to-teal-600 light:hover:from-purple-700 light:hover:to-teal-700 shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-500/25 light:hover:shadow-teal-500/25 transition-all duration-300 animate-bounce"
           size="icon"
         >
-          <ChevronUp className="h-5 w-5 lg:h-6 lg:w-6" />
+          <ChevronUp className="h-5 w-5 lg:h-6 lg:w-6 text-white dark:text-white light:text-gray-700" />
         </Button>
       )}
     </div>

@@ -166,7 +166,6 @@ const translations = {
     "footer.contact": "Contact Us",
     "footer.about": "About",
     "footer.copyright": "© 2024 Advanced IP Detection. All rights reserved.",
-    "footer.developer": "Developed by Verna Team",
     "footer.developer": "Developed by Nivadsec",
   },
   fa: {
@@ -321,7 +320,6 @@ const translations = {
     "footer.contact": "تماس با ما",
     "footer.about": "درباره ما",
     "footer.copyright": "© ۱۴۰۳ تشخیص پیشرفته IP. تمام حقوق محفوظ است.",
-    "footer.developer": "توسعه دهنده تیم ورنا (Verna Team)",
     "footer.developer": " توسعه دهنده Nivadsec ",
   },
 }

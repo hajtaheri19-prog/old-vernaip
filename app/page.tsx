@@ -17,7 +17,6 @@ import {
   Zap,
   AlertTriangle,
   Clock,
-  MapPin,
   Languages,
   Settings,
   ChevronUp,
@@ -25,73 +24,14 @@ import {
   Check,
   RefreshCw,
 } from "lucide-react"
+import { useTheme } from "next-themes"
 import { useLanguage } from "@/contexts/language-context"
+import dynamic from "next/dynamic"
 
-const InteractiveMap = ({ latitude, longitude, city, country }: any) => (
-  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-8 flex items-center justify-center h-48 lg:h-64">
-    <div className="text-center space-y-2">
-      <MapPin className="w-8 h-8 mx-auto text-purple-400" />
-      <p className="text-sm text-muted-foreground">
-        Map: {city}, {country}
-      </p>
-      <p className="text-xs text-muted-foreground">
-        {latitude?.toFixed(4)}, {longitude?.toFixed(4)}
-      </p>
-    </div>
-  </div>
-)
-
-const SpeedTest = () => (
-  <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
-    <CardContent className="p-6">
-      <div className="text-center space-y-4">
-        <Zap className="w-12 h-12 mx-auto text-orange-400" />
-        <h3 className="text-lg font-semibold">Speed Test</h3>
-        <p className="text-muted-foreground">Speed test functionality coming soon</p>
-        <Button className="bg-gradient-to-r from-orange-500 to-red-500">Start Test</Button>
-      </div>
-    </CardContent>
-  </Card>
-)
-
-const PortScanner = () => (
-  <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
-    <CardContent className="p-6">
-      <div className="text-center space-y-4">
-        <Shield className="w-12 h-12 mx-auto text-red-400" />
-        <h3 className="text-lg font-semibold">Port Scanner</h3>
-        <p className="text-muted-foreground">Port scanning functionality coming soon</p>
-        <Button className="bg-gradient-to-r from-red-500 to-pink-500">Start Scan</Button>
-      </div>
-    </CardContent>
-  </Card>
-)
-
-const WhoisLookup = () => (
-  <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
-    <CardContent className="p-6">
-      <div className="text-center space-y-4">
-        <Search className="w-12 h-12 mx-auto text-green-400" />
-        <h3 className="text-lg font-semibold">Whois Lookup</h3>
-        <p className="text-muted-foreground">Domain lookup functionality coming soon</p>
-        <Button className="bg-gradient-to-r from-green-500 to-blue-500">Lookup Domain</Button>
-      </div>
-    </CardContent>
-  </Card>
-)
-
-const AdvancedTools = () => (
-  <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
-    <CardContent className="p-6">
-      <div className="text-center space-y-4">
-        <Settings className="w-12 h-12 mx-auto text-cyan-400" />
-        <h3 className="text-lg font-semibold">Advanced Tools</h3>
-        <p className="text-muted-foreground">Advanced network tools coming soon</p>
-        <Button className="bg-gradient-to-r from-cyan-500 to-purple-500">Explore Tools</Button>
-      </div>
-    </CardContent>
-  </Card>
-)
+const SpeedTest = dynamic(() => import("@/components/speed-test"), { ssr: false })
+const PortScanner = dynamic(() => import("@/components/port-scanner"), { ssr: false })
+const WhoisLookup = dynamic(() => import("@/components/whois-lookup"), { ssr: false })
+const AdvancedTools = dynamic(() => import("@/components/advanced-tools"), { ssr: false })
 
 interface IPInfo {
   ip: string
@@ -123,8 +63,9 @@ interface NetworkStatus {
 }
 
 export default function IPDetectionApp() {
-  const [theme, setTheme] = useState("dark")
+  const { theme, setTheme } = useTheme()
   const { language, setLanguage, t, isRTL } = useLanguage()
+  const [mounted, setMounted] = useState(false)
   const [ipInfo, setIPInfo] = useState<IPInfo | null>(null)
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus | null>(null)
   const [loading, setLoading] = useState(false)
@@ -142,8 +83,7 @@ export default function IPDetectionApp() {
   const faqSectionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    document.documentElement.classList.add("dark")
-
+    setMounted(true)
     // Auto-detect IP on load
     detectIP()
 
@@ -410,6 +350,8 @@ export default function IPDetectionApp() {
     }
   }
 
+  if (!mounted) return null
+
   const navigationItems = [
     { id: "ip-detection", name: t("nav.ip-detection"), icon: Globe, ref: ipSectionRef },
     { id: "speed-test", name: t("nav.speed-test"), icon: Zap, ref: speedSectionRef },
@@ -418,12 +360,6 @@ export default function IPDetectionApp() {
     { id: "port-scanner", name: t("nav.port-scanner"), icon: Shield, ref: portSectionRef },
     { id: "faq", name: t("nav.faq"), icon: AlertTriangle, ref: faqSectionRef },
   ]
-
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark"
-    setTheme(newTheme)
-    document.documentElement.classList.toggle("dark", newTheme === "dark")
-  }
 
   return (
     <div className={`min-h-screen relative overflow-hidden ${isRTL ? "rtl font-persian" : ""}`}>
@@ -474,7 +410,7 @@ export default function IPDetectionApp() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={toggleTheme}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="bg-white/10 backdrop-blur-md border-white/30 hover:bg-white/20 transition-all duration-300 rounded-xl w-8 h-8 sm:w-10 sm:h-10"
               >
                 {theme === "dark" ? (
@@ -488,341 +424,272 @@ export default function IPDetectionApp() {
         </div>
       </nav>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6 space-y-6 lg:space-y-8">
-        <header className="text-center space-y-2 lg:space-y-3 py-2 lg:py-4">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-teal-400 bg-clip-text text-transparent animate-pulse">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-3 space-y-4 lg:space-y-5">
+        <header className="text-center space-y-1 lg:space-y-2 py-1 lg:py-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-teal-400 bg-clip-text text-transparent animate-pulse">
             {t("app.title")}
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
+          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
             {t("app.subtitle")}
           </p>
-          <div className="flex flex-wrap justify-center gap-2 lg:gap-3 mt-3 lg:mt-4">
-            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 lg:px-3 lg:py-1">
-              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2" />
+          <div className="flex flex-wrap justify-center gap-1 lg:gap-2 mt-2 lg:mt-3">
+            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 text-xs">
+              <Globe className="w-3 h-3 mr-1" />
               {t("nav.ip-detection")}
             </Badge>
-            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 lg:px-3 lg:py-1">
-              <Shield className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2" />
+            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 text-xs">
+              <Shield className="w-3 h-3 mr-1" />
               {t("network.title") || "Network Analysis"}
             </Badge>
-            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 lg:px-3 lg:py-1">
-              <Zap className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2" />
+            <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 px-2 py-1 text-xs">
+              <Zap className="w-3 h-3 mr-1" />
               {t("speed.title")}
             </Badge>
           </div>
         </header>
 
-        {/* IP Detection Section - Enhanced with merged layout */}
-        <section ref={ipSectionRef} className="space-y-3 lg:space-y-4">
-          <div className="text-center space-y-1 lg:space-y-2">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
+        <section ref={ipSectionRef} className="space-y-2 lg:space-y-3">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
               {t("ip.title")}
             </h2>
-            <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-              {t("ip.subtitle") || "Detect your IP address and location information"}
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
-            {/* Left side - IP Information and Network Status stacked */}
-            <div className="lg:col-span-2 space-y-3">
-              {/* IP Information Card */}
-              <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-2 text-base lg:text-lg">
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4" />
-                      {t("ip.detailed-info") || "IP Information"}
-                    </div>
-                    {detectionTime && (
-                      <Badge variant="outline" className="sm:ml-auto text-xs">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {detectionTime}ms
-                      </Badge>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {error && (
-                    <Alert className="mb-3 bg-red-500/10 border-red-500/20">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+            {/* IP Information Card */}
+            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
+              <CardHeader className="pb-1">
+                <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm lg:text-base">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    {t("ip.detailed-info") || "IP Information"}
+                  </div>
+                  {detectionTime && (
+                    <Badge variant="outline" className="sm:ml-auto text-xs">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {detectionTime}ms
+                    </Badge>
                   )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                {error && (
+                  <Alert className="mb-2 bg-red-500/10 border-red-500/20">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription className="text-xs">{error}</AlertDescription>
+                  </Alert>
+                )}
 
-                  {loading ? (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="animate-spin h-5 w-5 mr-2" />
-                      <span className="text-muted-foreground text-sm">{t("ip.detecting")}</span>
-                    </div>
-                  ) : ipInfo ? (
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs text-muted-foreground">{t("ip.address")}</p>
-                              <p className="font-mono text-sm lg:text-base font-bold text-purple-400 truncate">
-                                {ipInfo.ip}
-                              </p>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => copyToClipboard(ipInfo.ip, "ip")}
-                              className="h-6 w-6 flex-shrink-0"
-                            >
-                              {copiedField === "ip" ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            </Button>
-                          </div>
-
-                          <div className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs text-muted-foreground">{t("ip.location")}</p>
-                              <p className="text-sm lg:text-base flex items-center gap-2">
-                                <MapPin className="w-3 h-3 flex-shrink-0" />
-                                <span className="truncate">
-                                  {ipInfo.city}, {ipInfo.regionName}, {ipInfo.country}
-                                </span>
-                              </p>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() =>
-                                copyToClipboard(`${ipInfo.city}, ${ipInfo.regionName}, ${ipInfo.country}`, "location")
-                              }
-                              className="h-6 w-6 flex-shrink-0"
-                            >
-                              {copiedField === "location" ? (
-                                <Check className="h-3 w-3" />
-                              ) : (
-                                <Copy className="h-3 w-3" />
-                              )}
-                            </Button>
-                          </div>
-
-                          <div className="p-2 bg-white/5 rounded-lg">
-                            <p className="text-xs text-muted-foreground">{t("ip.coordinates")}</p>
-                            <p className="font-mono text-xs lg:text-sm">
-                              {ipInfo.lat.toFixed(4)}, {ipInfo.lon.toFixed(4)}
-                            </p>
-                          </div>
+                {loading ? (
+                  <div className="flex items-center justify-center py-3">
+                    <RefreshCw className="animate-spin h-4 w-4 mr-2" />
+                    <span className="text-muted-foreground text-xs">{t("ip.detecting")}</span>
+                  </div>
+                ) : ipInfo ? (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-1 gap-2">
+                      <div className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs text-muted-foreground">{t("ip.address")}</p>
+                          <p className="font-mono text-xs lg:text-sm font-bold text-purple-400 truncate">{ipInfo.ip}</p>
                         </div>
-
-                        <div className="space-y-2">
-                          <div className="p-2 bg-white/5 rounded-lg">
-                            <p className="text-xs text-muted-foreground">{t("ip.isp")}</p>
-                            <p className="font-medium text-xs lg:text-sm truncate">{ipInfo.isp}</p>
-                          </div>
-
-                          <div className="p-2 bg-white/5 rounded-lg">
-                            <p className="text-xs text-muted-foreground">{t("ip.organization")}</p>
-                            <p className="font-medium text-xs lg:text-sm truncate">{ipInfo.org}</p>
-                          </div>
-
-                          <div className="p-2 bg-white/5 rounded-lg">
-                            <p className="text-xs text-muted-foreground">{t("ip.timezone")}</p>
-                            <p className="font-medium text-xs lg:text-sm">{ipInfo.timezone}</p>
-                          </div>
-
-                          <div className="p-2 bg-white/5 rounded-lg">
-                            <p className="text-xs text-muted-foreground">{t("ip.postal")}</p>
-                            <p className="font-medium text-xs lg:text-sm">{ipInfo.zip}</p>
-                          </div>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => copyToClipboard(ipInfo.ip, "ip")}
+                          className="h-5 w-5 flex-shrink-0"
+                        >
+                          {copiedField === "ip" ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                        </Button>
                       </div>
 
-                      <Button
-                        onClick={detectIP}
-                        disabled={loading}
-                        className="w-full bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600 text-sm py-2"
-                      >
-                        <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-                        {loading ? t("ip.detecting") : t("ip.refresh")}
-                      </Button>
+                      <div className="p-2 bg-white/5 rounded-lg">
+                        <p className="text-xs text-muted-foreground">{t("ip.location")}</p>
+                        <p className="text-xs lg:text-sm">
+                          {ipInfo.city}, {ipInfo.regionName}, {ipInfo.country}
+                        </p>
+                      </div>
+
+                      <div className="p-2 bg-white/5 rounded-lg">
+                        <p className="text-xs text-muted-foreground">{t("ip.coordinates")}</p>
+                        <p className="font-mono text-xs">
+                          {ipInfo.lat.toFixed(4)}, {ipInfo.lon.toFixed(4)}
+                        </p>
+                      </div>
+
+                      <div className="p-2 bg-white/5 rounded-lg">
+                        <p className="text-xs text-muted-foreground">{t("ip.isp")}</p>
+                        <p className="font-medium text-xs truncate">{ipInfo.isp}</p>
+                      </div>
+
+                      <div className="p-2 bg-white/5 rounded-lg">
+                        <p className="text-xs text-muted-foreground">{t("ip.timezone")}</p>
+                        <p className="font-medium text-xs">{ipInfo.timezone}</p>
+                      </div>
                     </div>
-                  ) : (
+
                     <Button
                       onClick={detectIP}
                       disabled={loading}
-                      className="w-full bg-gradient-to-r from-purple-500 to-teal-500 text-sm py-2"
+                      className="w-full bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600 text-xs py-2"
                     >
-                      <Globe className="w-4 h-4 mr-2" />
-                      {t("ip.detect") || "Detect My IP"}
+                      <RefreshCw className={`w-3 h-3 mr-2 ${loading ? "animate-spin" : ""}`} />
+                      {loading ? t("ip.detecting") : t("ip.refresh")}
                     </Button>
-                  )}
-                </CardContent>
-              </Card>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={detectIP}
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-purple-500 to-teal-500 text-xs py-2"
+                  >
+                    <Globe className="w-3 h-3 mr-2" />
+                    {t("ip.detect") || "Detect My IP"}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
 
-              {/* Network Status Card */}
-              <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
-                    <Wifi className="w-4 h-4" />
-                    {t("network.title") || "Network Status"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {networkStatus ? (
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">{t("network.connection") || "Connection"}</span>
-                        <Badge variant="secondary" className="text-xs">
-                          {networkStatus.connectionType === "Mobile"
-                            ? t("network.mobile") || "Mobile"
-                            : t("network.broadband") || "Broadband"}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">{t("network.security") || "Security"}</span>
-                        <Badge
-                          variant={networkStatus.securityStatus.includes("Proxy") ? "destructive" : "default"}
-                          className="text-xs"
-                        >
-                          {networkStatus.securityStatus.includes("Proxy")
-                            ? t("network.proxy") || "Proxy"
-                            : t("network.direct") || "Direct"}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">{t("network.ipv6") || "IPv6"}</span>
-                        <Badge variant={networkStatus.ipv6Support ? "default" : "secondary"} className="text-xs">
-                          {networkStatus.ipv6Support
-                            ? t("network.supported") || "Supported"
-                            : t("network.not-supported") || "Not Supported"}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">{t("network.response-time") || "Response Time"}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {networkStatus.responseTime}ms
-                        </Badge>
-                      </div>
+            {/* Network Status Card */}
+            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
+              <CardHeader className="pb-1">
+                <CardTitle className="flex items-center gap-2 text-sm lg:text-base">
+                  <Wifi className="w-4 h-4" />
+                  {t("network.title") || "Network Status"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                {networkStatus ? (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
+                      <span className="text-xs">{t("network.connection") || "Connection"}</span>
+                      <Badge variant="secondary" className="text-xs px-1 py-0">
+                        {networkStatus.connectionType === "Mobile"
+                          ? t("network.mobile") || "Mobile"
+                          : t("network.broadband") || "Broadband"}
+                      </Badge>
                     </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">{t("network.connection") || "Connection"}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {t("network.detecting") || "Detecting..."}
-                        </Badge>
-                      </div>
+                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
+                      <span className="text-xs">{t("network.security") || "Security"}</span>
+                      <Badge
+                        variant={networkStatus.securityStatus.includes("Proxy") ? "destructive" : "default"}
+                        className="text-xs px-1 py-0"
+                      >
+                        {networkStatus.securityStatus.includes("Proxy")
+                          ? t("network.proxy") || "Proxy"
+                          : t("network.direct") || "Direct"}
+                      </Badge>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right side - Interactive Map */}
-            <div className="lg:col-span-1">
-              <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl h-full">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
-                    <MapPin className="w-4 h-4" />
-                    {t("ip.map-title") || "Location Map"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 h-full">
-                  {ipInfo ? (
-                    <div className="h-48 lg:h-64 rounded-lg overflow-hidden">
-                      <InteractiveMap
-                        latitude={ipInfo.lat}
-                        longitude={ipInfo.lon}
-                        city={ipInfo.city}
-                        country={ipInfo.country}
-                        accuracy={1000}
-                      />
+                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
+                      <span className="text-xs">{t("network.ipv6") || "IPv6"}</span>
+                      <Badge
+                        variant={networkStatus.ipv6Support ? "default" : "secondary"}
+                        className="text-xs px-1 py-0"
+                      >
+                        {networkStatus.ipv6Support
+                          ? t("network.supported") || "Supported"
+                          : t("network.not-supported") || "Not Supported"}
+                      </Badge>
                     </div>
-                  ) : (
-                    <div className="h-48 lg:h-64 rounded-lg bg-white/5 flex items-center justify-center">
-                      <div className="text-center space-y-2">
-                        <MapPin className="w-8 h-8 mx-auto text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">{t("ip.detect-first") || "Detect IP first"}</p>
-                      </div>
+                    <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
+                      <span className="text-xs">{t("network.response-time") || "Response Time"}</span>
+                      <Badge variant="outline" className="text-xs px-1 py-0">
+                        {networkStatus.responseTime}ms
+                      </Badge>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs">{t("network.connection") || "Connection"}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {t("network.detecting") || "Detecting..."}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </section>
 
-        {/* Speed Test Section */}
-        <section ref={speedSectionRef} className="space-y-3 lg:space-y-4">
-          <div className="text-center space-y-1 lg:space-y-2">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+        {/* Speed Test Section - More compact */}
+        <section ref={speedSectionRef} className="space-y-2 lg:space-y-3">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
               {t("speed.title")}
             </h2>
-            <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">{t("speed.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("speed.subtitle")}</p>
           </div>
           <SpeedTest />
         </section>
 
-        {/* Whois Lookup Section */}
-        <section ref={whoisSectionRef} className="space-y-3 lg:space-y-4">
-          <div className="text-center space-y-1 lg:space-y-2">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+        {/* Whois Lookup Section - More compact */}
+        <section ref={whoisSectionRef} className="space-y-2 lg:space-y-3">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
               {t("whois.title")}
             </h2>
-            <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">{t("whois.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("whois.subtitle")}</p>
           </div>
           <WhoisLookup />
         </section>
 
-        {/* Advanced Tools Section */}
-        <section ref={toolsSectionRef} className="space-y-3 lg:space-y-4">
-          <div className="text-center space-y-1 lg:space-y-2">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+        {/* Advanced Tools Section - More compact */}
+        <section ref={toolsSectionRef} className="space-y-2 lg:space-y-3">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
               {t("tools.title") || "Advanced Tools"}
             </h2>
-            <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">
               {t("tools.subtitle") || "Advanced network analysis tools"}
             </p>
           </div>
           <AdvancedTools />
         </section>
 
-        {/* Port Scanner Section */}
-        <section ref={portSectionRef} className="space-y-3 lg:space-y-4">
-          <div className="text-center space-y-1 lg:space-y-2">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2 bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
+        {/* Port Scanner Section - More compact */}
+        <section ref={portSectionRef} className="space-y-2 lg:space-y-3">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
               {t("port.title")}
             </h2>
-            <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">{t("port.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("port.subtitle")}</p>
           </div>
           <PortScanner />
         </section>
 
-        <section ref={faqSectionRef} className="space-y-3 lg:space-y-4">
-          <div className="text-center space-y-1 lg:space-y-2">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+        {/* FAQ Section - More compact grid */}
+        <section ref={faqSectionRef} className="space-y-2 lg:space-y-3">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
               {t("faq.title")}
             </h2>
-            <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">{t("faq.subtitle")}</p>
+            <p className="text-sm lg:text-base text-muted-foreground max-w-xl mx-auto px-4">{t("faq.subtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-3 max-w-6xl mx-auto">
             {[1, 2, 3, 4, 5, 6].map((num) => (
               <Card
                 key={num}
                 className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl hover:bg-white/15 transition-all duration-300"
               >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm lg:text-base text-purple-300">{t(`faq.q${num}`)}</CardTitle>
+                <CardHeader className="pb-1">
+                  <CardTitle className="text-xs lg:text-sm text-purple-300">{t(`faq.q${num}`)}</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-muted-foreground leading-relaxed text-xs lg:text-sm">{t(`faq.a${num}`)}</p>
+                  <p className="text-muted-foreground leading-relaxed text-xs">{t(`faq.a${num}`)}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
         </section>
 
-        <footer className="border-t border-white/20 pt-6 lg:pt-8 pb-4 lg:pb-6 mt-8 lg:mt-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-4 lg:mb-6">
-            <div className="space-y-2">
-              <h3 className="text-base lg:text-lg font-bold bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
+        {/* Footer - More compact */}
+        <footer className="border-t border-white/20 pt-3 lg:pt-4 pb-2 lg:pb-3 mt-4 lg:mt-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 mb-3 lg:mb-4">
+            <div className="space-y-1">
+              <h3 className="text-sm lg:text-base font-bold bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
                 {t("footer.title") || "Advanced IP Detection"}
               </h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
@@ -830,9 +697,9 @@ export default function IPDetectionApp() {
               </p>
             </div>
 
-            <div className="space-y-2">
-              <h4 className="font-semibold text-white text-xs lg:text-sm">{t("footer.features") || "Features"}</h4>
-              <ul className="space-y-1 text-xs text-muted-foreground">
+            <div className="space-y-1">
+              <h4 className="font-semibold text-white text-xs">{t("footer.features") || "Features"}</h4>
+              <ul className="space-y-0.5 text-xs text-muted-foreground">
                 <li>{t("nav.ip-detection")}</li>
                 <li>{t("nav.speed-test")}</li>
                 <li>{t("nav.whois")}</li>
@@ -840,18 +707,18 @@ export default function IPDetectionApp() {
               </ul>
             </div>
 
-            <div className="space-y-2">
-              <h4 className="font-semibold text-white text-xs lg:text-sm">{t("footer.tools") || "Tools"}</h4>
-              <ul className="space-y-1 text-xs text-muted-foreground">
+            <div className="space-y-1">
+              <h4 className="font-semibold text-white text-xs">{t("footer.tools") || "Tools"}</h4>
+              <ul className="space-y-0.5 text-xs text-muted-foreground">
                 <li>{t("nav.advanced-tools") || "Advanced Tools"}</li>
                 <li>{t("tools.dns-lookup") || "DNS Lookup"}</li>
                 <li>{t("tools.traceroute") || "Traceroute"}</li>
               </ul>
             </div>
 
-            <div className="space-y-2">
-              <h4 className="font-semibold text-white text-xs lg:text-sm">{t("footer.support") || "Support"}</h4>
-              <ul className="space-y-1 text-xs text-muted-foreground">
+            <div className="space-y-1">
+              <h4 className="font-semibold text-white text-xs">{t("footer.support") || "Support"}</h4>
+              <ul className="space-y-0.5 text-xs text-muted-foreground">
                 <li>{t("nav.faq")}</li>
                 <li>{t("footer.privacy") || "Privacy Policy"}</li>
                 <li>{t("footer.terms") || "Terms of Service"}</li>
@@ -860,10 +727,11 @@ export default function IPDetectionApp() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-3 lg:pt-4 text-center">
+          <div className="border-t border-white/10 pt-2 lg:pt-3 text-center space-y-1">
             <p className="text-muted-foreground text-xs">
               {t("footer.copyright") || "© 2024 Advanced IP Detection. All rights reserved."}
             </p>
+            <p className="text-muted-foreground text-xs">{t("footer.developer")}</p>
           </div>
         </footer>
       </div>
@@ -878,14 +746,6 @@ export default function IPDetectionApp() {
           <ChevronUp className="h-5 w-5 lg:h-6 lg:w-6" />
         </Button>
       )}
-
-      {/* Leaflet CSS link */}
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossOrigin=""
-      />
     </div>
   )
 }

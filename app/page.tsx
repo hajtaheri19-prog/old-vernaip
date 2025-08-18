@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import Head from "next/head"
 import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -363,6 +363,11 @@ export default function IPDetectionApp() {
 
   return (
     <div className={`min-h-screen relative overflow-hidden ${isRTL ? "rtl font-persian" : ""}`}>
+    
+    <Head>
+        <meta name="google-site-verification" content="uFczkiyCT4PIkplPK7QY1VHqUcDeArDAc9fzOLLa5Fw" />
+      </Head>
+      
       {/* Enhanced background with animated particles */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-teal-900/20 animate-gradient-xy"></div>
       <div className="fixed inset-0 bg-black/10 backdrop-blur-sm"></div>

@@ -170,7 +170,7 @@ const translations = {
   },
   fa: {
     // Header
-    "app.title": "تشخیص پیشرفته IP",
+    "app.title": "Nigar IP | نیگار آی پی",
     "app.subtitle": "ابزارهای حرفه‌ای تحلیل شبکه و امنیت",
 
     // Navigation
@@ -319,7 +319,7 @@ const translations = {
     "footer.terms": "شرایط خدمات",
     "footer.contact": "تماس با ما",
     "footer.about": "درباره ما",
-    "footer.copyright": "© ۱۴۰۳ تشخیص پیشرفته IP. تمام حقوق محفوظ است.",
+    "footer.copyright": "© ۱۴۰۳ نیگار آی پی. تمام حقوق محفوظ است.",
     "footer.developer": " توسعه دهنده Nivadsec ",
   },
 }

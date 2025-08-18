@@ -366,7 +366,7 @@ export default function IPDetectionApp() {
     
     {/* افزودن متا تگ به Head */}
       <Head>
-        <meta name="google-site-verification" content="uFczkiyCT4PIkplPK7QY1VHqUcDeArDAc9fzOLLa5Fw" />
+       <meta name="google-site-verification" content="uFczkiyCT4PIkplPK7QY1VHqUcDeArDAc9fzOLLa5Fw" />
       </Head>
 
       {/* Enhanced background with animated particles */}

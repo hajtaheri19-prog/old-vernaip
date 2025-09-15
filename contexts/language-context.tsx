@@ -320,7 +320,7 @@ const translations = {
     "footer.contact": "تماس با ما",
     "footer.about": "درباره ما",
     "footer.copyright": "© ۱۴۰۳ نیگار آی پی. تمام حقوق محفوظ است.",
-    "footer.developer": " توسعه دهنده Nivadsec ",
+    "footer.developer": "توسعه دهنده حسین طاهری",
   },
 }
 
